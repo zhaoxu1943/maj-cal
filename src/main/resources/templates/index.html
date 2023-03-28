@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Maj Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            background-color: #f5f5f5;
+            overflow-x: hidden;
+        }
+        header {
+            background-color: #ffa500;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 48px;
+            font-weight: bold; /* changed from normal to bold */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 24px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #3e8e41;
+        }
+        .result {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 24px;
+            box-sizing: border-box;
+        }
+        p {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        pre {
+            font-size: 24px;
+            font-weight: bold; /* changed from normal to bold */
+            font-family: "Open Sans", sans-serif; /* added new font family */
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+<header>Maj Calculator</header>
+<div class="container">
+    <form method="post" th:action="@{/submit}">
+        <label for="inputField">请输入OCR后的对局信息:</label>
+        <input type="text" id="inputField" name="inputValue">
+        <button type="submit">执行计算</button>
+
+    </form>
+
+    <form method="get" th:action="@{/latest}">
+        <button type="submit">查询最近场次</button>
+    </form>
+
+
+    <div th:if="${majContext != null}" class="result">
+        <p>计算结果:</p>
+        <pre th:text="${majContext.toString()}"></pre>
+    </div>
+    <div th:if="${majContexts != null}">
+        <p>最近的场次:</p>
+        <div th:each="majContext : ${majContexts}">
+            <pre th:text="${majContext.toString()}"></pre>
+        </div>
+    </div>
+</div>
+</body>
+</html>
