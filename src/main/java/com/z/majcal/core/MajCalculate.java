@@ -6,8 +6,6 @@ import com.google.common.collect.Maps;
 import com.z.majcal.config.MajPlayer;
 import com.z.majcal.entity.dto.MajPlayerResult;
 import com.z.majcal.exception.MajException;
-import com.z.majcal.exception.OcrException;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
@@ -254,7 +252,7 @@ public class MajCalculate {
 
         //validate ocr数据
         if (actuaSum!=sumAll){
-            throw new OcrException("扫描异常,扫描总分"+(actuaSum)+"不等于总分"+sumAll+"请重新扫描");
+            throw new MajException("扫描异常,扫描总分"+(actuaSum)+"不等于总分"+sumAll+"请重新扫描");
         }
 
         transCal(winnerList, loserList);
