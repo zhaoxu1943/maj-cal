@@ -27,6 +27,7 @@ public class MajCalculate {
 
     /**
      * 算钱主程序
+     *
      * @param originStr 原始ocr串
      * @author zhaoxu
      */
@@ -43,7 +44,7 @@ public class MajCalculate {
 
         //初始化上下文
         //基于上述信息,初始化上下文
-        initMajContext(playerSet,originResultList.size());
+        initMajContext(playerSet, originResultList.size());
         //将每局解析为map
         List<Map<String, Integer>> resultMapList = convertToMap(originResultList);
         //生成对局信息
@@ -58,6 +59,7 @@ public class MajCalculate {
 
     /**
      * 字符串预处理: 解决昵称扫描,与分数无空格,导致扫描不到该玩家的问题
+     *
      * @param
      * @return
      * @throws
@@ -66,13 +68,20 @@ public class MajCalculate {
     private String preProcess(String originStr) {
 
         //字符串预处理: 1. 解决昵称扫描问题 ,采用昵称精确扫描
-        for (String nickName:allNickNameList) {
-            originStr = originStr.replaceAll(nickName," "+ nickName + " ");
+        for (String nickName : allNickNameList) {
+            originStr = originStr.replaceAll(nickName, " " + nickName + " ");
 
         }
         // 预处理2: 替换名字有数字的id
-        String str = originStr.replace("sldk19","雨神");
-        str = str.replace("stephen1943","zhaoxu");
+        String str = originStr.replace("sldk19", "雨神");
+        str = str.replace("stephen1943", "zhaoxu");
+
+
+        //预处理2: 处理n 和位之间的空格
+        String pattern = "\\s+位"; // 匹配一个或多个空格后面跟着"位"
+        String replacement = "位"; // 替换为"-位"
+        str = str.replaceAll(pattern, replacement);
+
 
         // 预处理3 : 避免1位,2位,3位,4位,中的数字扫描
         str = str.replace("1位", " 一位");
@@ -85,10 +94,11 @@ public class MajCalculate {
 
     /**
      * 原始字符串提取玩家
+     *
      * @param originStr 原始字符串
      * @author zhaoxu
      */
-    private  Set<String> playerAnalyse(String originStr) {
+    private Set<String> playerAnalyse(String originStr) {
         Set<String> matches = new HashSet<>();
         Pattern pattern = Pattern.compile("\\b(" + String.join("|", allNickNameList) + ")\\b");
         Matcher matcher = pattern.matcher(originStr);
@@ -101,27 +111,27 @@ public class MajCalculate {
 
     /**
      * 对字符串做基础处理
+     *
      * @param originStr 原始OCR后字符串
      * @return List<String> 每局形成的List
      * @author zhaoxu
      */
     private static List<String> convertStringToList(String originStr) {
-        if (originStr.contains(CHANG_CI)){
+        if (originStr.contains(CHANG_CI)) {
             return spilt(originStr, CHANG_CI);
-        }else if (originStr.contains(CHANG_CI_TRAD)) {
+        } else if (originStr.contains(CHANG_CI_TRAD)) {
             return spilt(originStr, CHANG_CI_TRAD);
-        }else if (originStr.contains(CHANG_CI_TRAD_PC)){
-            return spilt(originStr,CHANG_CI_TRAD_PC);
-        }else {
+        } else if (originStr.contains(CHANG_CI_TRAD_PC)) {
+            return spilt(originStr, CHANG_CI_TRAD_PC);
+        } else {
             throw new MajException("spilt异常,无友人场或相关字样");
         }
 
     }
 
     /**
-     *
      * @param originStr 原始OCR后字符串
-     * @param spiltStr 分割字符串
+     * @param spiltStr  分割字符串
      * @author zhaoxu
      */
 
@@ -139,6 +149,7 @@ public class MajCalculate {
 
     /**
      * 初始化上下文
+     *
      * @param playerSet 玩家集合
      * @author zhaoxu
      */
@@ -148,10 +159,10 @@ public class MajCalculate {
         context.setPlayerNickNameSet(playerSet);
         context.setType(playerSet.size());
         context.setTime(times);
-        if (context.getType()==3) {
+        if (context.getType() == 3) {
             context.setEveryTenThousandScoreRMB(TYPE_3_EVERY_TEN_THOUSAND_SCORE_RMB);
             context.setScoreEveryTime(TYPE_3_SCORE);
-        }else if (context.getType()==4) {
+        } else if (context.getType() == 4) {
             context.setEveryTenThousandScoreRMB(TYPE_4_EVERY_TEN_THOUSAND_SCORE_RMB);
             context.setScoreEveryTime(TYPE_4_SCORE);
         }
@@ -159,9 +170,9 @@ public class MajCalculate {
     }
 
 
-
     /**
      * 输出对局信息
+     *
      * @author zhaoxu
      */
     private void createMatchInfo() {
@@ -186,54 +197,55 @@ public class MajCalculate {
 
     /**
      * 算总分,总钱数,如果OCR异常则抛出
-     * @param resultMapList  对局Map
+     *
+     * @param resultMapList 对局Map
      * @throws RuntimeException OCR异常
      * @author zhaoxu
      */
     private void calculateAndValidate(List<Map<String, Integer>> resultMapList) {
         BigDecimal moneyAll = null;
         int sumAll = 0;
-        if (context.getType()==3){
+        if (context.getType() == 3) {
             moneyAll = context.getEveryTenThousandScoreRMB()
-                      .multiply(new BigDecimal(TYPE_3_SCORE))
-                      .multiply(new BigDecimal(context.getTime()))
-                      .multiply(BigDecimal.valueOf(0.0001))
-                      .multiply(new BigDecimal(context.getType())
-                      .setScale(4, RoundingMode.HALF_UP));
-            sumAll  = TYPE_3_SCORE*context.getTime()*context.getType();
-        }else if (context.getType()==4){
+                    .multiply(new BigDecimal(TYPE_3_SCORE))
+                    .multiply(new BigDecimal(context.getTime()))
+                    .multiply(BigDecimal.valueOf(0.0001))
+                    .multiply(new BigDecimal(context.getType())
+                            .setScale(4, RoundingMode.HALF_UP));
+            sumAll = TYPE_3_SCORE * context.getTime() * context.getType();
+        } else if (context.getType() == 4) {
             moneyAll = context.getEveryTenThousandScoreRMB()
                     .multiply(new BigDecimal(TYPE_4_SCORE))
                     .multiply(new BigDecimal(context.getTime()))
                     .multiply(new BigDecimal(context.getType())
-                    .multiply(BigDecimal.valueOf(0.0001))
-                    .setScale(4, RoundingMode.HALF_UP));
-            sumAll  = TYPE_4_SCORE*context.getTime()*context.getType();
+                            .multiply(BigDecimal.valueOf(0.0001))
+                            .setScale(4, RoundingMode.HALF_UP));
+            sumAll = TYPE_4_SCORE * context.getTime() * context.getType();
         }
 
-        int actuaSum  = 0;
+        int actuaSum = 0;
         // 创建选手结果存储,并根据分数排序
         List<MajPlayerResult> matchResultList = Lists.newArrayList();
-        for (String player:context.getPlayerNickNameSet()){
+        for (String player : context.getPlayerNickNameSet()) {
             MajPlayerResult playerResult = new MajPlayerResult();
-            int scoreSum = getSum(resultMapList,player);
-            int baseScoreSum = context.getTime()*context.getScoreEveryTime();
+            int scoreSum = getSum(resultMapList, player);
+            int baseScoreSum = context.getTime() * context.getScoreEveryTime();
             BigDecimal baseMoney = moneyAll.divide(BigDecimal.valueOf(context.getType())).setScale(2, RoundingMode.HALF_UP);
-            actuaSum+=scoreSum;
-            BigDecimal percent = new BigDecimal(scoreSum).divide(new BigDecimal(sumAll),4,RoundingMode.HALF_UP);
-            BigDecimal percentNum = percent.multiply(new BigDecimal(100)).setScale(2,RoundingMode.HALF_UP);
+            actuaSum += scoreSum;
+            BigDecimal percent = new BigDecimal(scoreSum).divide(new BigDecimal(sumAll), 4, RoundingMode.HALF_UP);
+            BigDecimal percentNum = percent.multiply(new BigDecimal(100)).setScale(2, RoundingMode.HALF_UP);
             BigDecimal money = percent.multiply(moneyAll).setScale(2, RoundingMode.HALF_UP);
             playerResult.setScoreSum(scoreSum);
             playerResult.setPercent(percentNum);
             playerResult.setMoney(money);
             playerResult.setNickName(player);
-            playerResult.setWin(scoreSum>=baseScoreSum);
+            playerResult.setWin(scoreSum >= baseScoreSum);
             playerResult.setChangeMoney(money.subtract(baseMoney).abs());
             matchResultList.add(playerResult);
             matchResultList.sort(Comparator.comparing(MajPlayerResult::getScoreSum).reversed());
             //排序后赋予名次
             for (int i = 0; i < matchResultList.size(); i++) {
-                matchResultList.get(i).setRank(i+1);
+                matchResultList.get(i).setRank(i + 1);
             }
         }
 
@@ -251,8 +263,8 @@ public class MajCalculate {
 
 
         //validate ocr数据
-        if (actuaSum!=sumAll){
-            throw new MajException("扫描异常,扫描总分"+(actuaSum)+"不等于总分"+sumAll+"请重新扫描");
+        if (actuaSum != sumAll) {
+            throw new MajException("扫描异常,扫描总分" + (actuaSum) + "不等于总分" + sumAll + "请重新扫描");
         }
 
         transCal(winnerList, loserList);
@@ -262,6 +274,7 @@ public class MajCalculate {
 
     /**
      * 转账计算
+     *
      * @param
      * @return
      * @throws
@@ -270,10 +283,10 @@ public class MajCalculate {
     private void transCal(List<MajPlayerResult> winnerList, List<MajPlayerResult> loserList) {
         //转账计算
         StringBuilder transactionInfo = new StringBuilder();
-        if (context.getType()==3){
-            if (winnerList.size()==1){
+        if (context.getType() == 3) {
+            if (winnerList.size() == 1) {
                 //两次
-                for (MajPlayerResult loser: loserList) {
+                for (MajPlayerResult loser : loserList) {
                     transactionInfo.append(loser.getNickName())
                             .append(" 向 ")
                             .append(winnerList.get(0).getNickName())
@@ -281,12 +294,12 @@ public class MajCalculate {
                             .append(loser.getChangeMoney())
                             .append("元\n");
                 }
-            }else{
-                for (MajPlayerResult winner: winnerList) {
+            } else {
+                for (MajPlayerResult winner : winnerList) {
                     transactionInfo.append(loserList.get(0).getNickName()).append(" 向 ").append(winner.getNickName()).append(" 转 ").append(winner.getChangeMoney()).append("元\n");
                 }
             }
-        }else if (context.getType()==4) {
+        } else if (context.getType() == 4) {
             if (winnerList.size() == 1) {
                 for (MajPlayerResult loser : loserList) {
                     transactionInfo.append(loser.getNickName()).append(" 向 ").append(winnerList.get(0).getNickName()).append(" 转 ").append(loser.getChangeMoney()).append("元\n");
@@ -319,14 +332,15 @@ public class MajCalculate {
 
     /**
      * 将spilt后的字符串转换为map
+     *
      * @param originResultList 每一局stringList转化为MapList
      * @author zhaoxu
      */
 
     private List<Map<String, Integer>> convertToMap(List<String> originResultList) {
-        List<Map<String,Integer>> resultMapList = Lists.newArrayList();
-        for (String originResultString: originResultList){
-            if (CharSequenceUtil.isNotEmpty(originResultString)){
+        List<Map<String, Integer>> resultMapList = Lists.newArrayList();
+        for (String originResultString : originResultList) {
+            if (CharSequenceUtil.isNotEmpty(originResultString)) {
                 resultMapList.add(convertStringToMap(originResultString));
             }
         }
@@ -337,11 +351,12 @@ public class MajCalculate {
 
     /**
      * 将字符串识别为分数Map
-     * @param originResultString  每一局的结果
-     * @return Map<String,Integer>  key为玩家名字，value为分数
+     *
+     * @param originResultString 每一局的结果
+     * @return Map<String, Integer>  key为玩家名字，value为分数
      * @author zhaoxu
      */
-    private  Map<String,Integer> convertStringToMap(String originResultString) {
+    private Map<String, Integer> convertStringToMap(String originResultString) {
         //首先扫描分数
         //有序的分数list
         List<Integer> sortedScoreList = getSortedScoreList(originResultString);
@@ -349,17 +364,12 @@ public class MajCalculate {
         return getPlayerMap(originResultString, sortedScoreList);
 
 
-
     }
 
 
-
-
-
-
-    private  int getSum(List<Map<String,Integer>> resultMapList,String name) {
+    private int getSum(List<Map<String, Integer>> resultMapList, String name) {
         int sum = 0;
-        for (Map<String,Integer> map:resultMapList) {
+        for (Map<String, Integer> map : resultMapList) {
             if (map.containsKey(name)) {
                 sum += map.get(name);
             }
@@ -368,10 +378,9 @@ public class MajCalculate {
     }
 
 
-
-
     /**
      * 获取有序分数列表
+     *
      * @param originResultString 原始字符串
      * @author zhaoxu
      */
@@ -389,60 +398,56 @@ public class MajCalculate {
     }
 
 
-
     /**
      * 根据原始字符串,分数列表
      * 匹配玩家
+     *
      * @param originResultString 原始字符串
-     * @param sortedScoreList 有序分数列表
-     * @return Map<String,Integer> key为玩家名字，value为分数
+     * @param sortedScoreList    有序分数列表
+     * @return Map<String, Integer> key为玩家名字，value为分数
      * @author zhaoxu
      */
-    private  Map<String,Integer> getPlayerMap(String originResultString, List<Integer> sortedScoreList) {
+    private Map<String, Integer> getPlayerMap(String originResultString, List<Integer> sortedScoreList) {
         Map<String, Integer> scoreMap = Maps.newTreeMap();
         String s = originResultString.trim();
 
-        Set<String> nickNameSet =  context.getPlayerNickNameSet();
+        Set<String> nickNameSet = context.getPlayerNickNameSet();
         Map<String, String> rankMap = Maps.newTreeMap();
         for (String nickName : nickNameSet) {
             int index = s.indexOf(nickName);
             //寻找玩家名字前面的排名
-            int rankIndex = index-1;
-            while (" ".equals(String.valueOf(s.charAt(rankIndex)))){
+            int rankIndex = index - 1;
+            while (" ".equals(String.valueOf(s.charAt(rankIndex)))) {
                 rankIndex--;
             }
             //SubString,左闭右开[)
-            String rank = s.substring(rankIndex - 1, rankIndex+1);
-            rankMap.put(rank,nickName);
+            String rank = s.substring(rankIndex - 1, rankIndex + 1);
+            rankMap.put(rank, nickName);
         }
 
         for (int i = 0; i < sortedScoreList.size(); i++) {
             String rank;
             switch (i) {
                 case 0:
-                    rank= "一位";
-                break;
+                    rank = "一位";
+                    break;
                 case 1:
-                    rank= "二位";
-                break;
+                    rank = "二位";
+                    break;
                 case 2:
-                    rank= "三位";
-                break;
+                    rank = "三位";
+                    break;
                 case 3:
-                    rank= "四位";
-                break;
+                    rank = "四位";
+                    break;
                 default:
-                    rank= "异常";
+                    rank = "异常";
             }
             String nickName = rankMap.get(rank);
-            scoreMap.put(nickName,sortedScoreList.get(i));
+            scoreMap.put(nickName, sortedScoreList.get(i));
         }
         return scoreMap;
     }
-
-
-
-
 
 
 }
