@@ -8,7 +8,7 @@ public enum MajPlayer {
 
     zhaoxu("zhaoxu"),
     zhengyang("吃肉的山羊"),
-    zhanglei("毒瘤小张"),
+    zhanglei("zhanglei"),
     haoge("FeiClusell"),
     zhaolu("清寒亦寒"),
     wangyu("雨神"),

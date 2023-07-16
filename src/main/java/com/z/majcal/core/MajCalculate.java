@@ -76,6 +76,11 @@ public class MajCalculate {
         String str = originStr.replace("sldk19", "雨神");
         str = str.replace("stephen1943", "zhaoxu");
 
+        //预处理: zhanglei名字问题
+        str = str.replace("毒瘤小张","zhanglei");
+        str = str.replace("瘤小张","zhanglei");
+
+
 
         //预处理2: 处理n 和位之间的空格
         String pattern = "\\s+位"; // 匹配一个或多个空格后面跟着"位"
