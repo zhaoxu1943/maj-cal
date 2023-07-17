@@ -6,6 +6,7 @@ import com.z.majcal.core.MajContext;
 import com.z.majcal.db.MajDataBaseImpl;
 import com.z.majcal.db.service.MajDataBase;
 import com.z.majcal.exception.MajException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.stereotype.Controller;
@@ -19,13 +20,14 @@ import java.util.List;
 
 @SpringBootApplication
 @Controller
+@RequiredArgsConstructor
 public class MajCalApplication {
+
+    private final MajDataBase majDataBase;
 
     public static void main(String[] args) {
         SpringApplication.run(MajCalApplication.class, args);
     }
-
-
 
 
     @PostMapping("/submit")
@@ -54,13 +56,13 @@ public class MajCalApplication {
 
     @GetMapping("/latest")
     public String getLatestMajContext(Model model) {
-        MajDataBase db = new MajDataBaseImpl();
-        List<MajContext> majContexts = db.queryAllFromFile();
+        List<MajContext> majContexts = majDataBase.queryAllFromFile();
+        List<String> resultList = majDataBase.analyzeHistoryMaj();
         majContexts.sort(Comparator.comparing(MajContext::getCreateTime).reversed());
         model.addAttribute("majContexts", majContexts);
+        model.addAttribute("resultList", resultList);
         return "index";
     }
-
 
 
 }

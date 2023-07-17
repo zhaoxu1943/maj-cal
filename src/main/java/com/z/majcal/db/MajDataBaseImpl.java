@@ -3,19 +3,26 @@ package com.z.majcal.db;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.google.common.collect.Maps;
 import com.z.majcal.core.MajContext;
 import com.z.majcal.db.service.MajDataBase;
+import com.z.majcal.entity.dto.MajPlayerResult;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
 @Slf4j
+@Service
 public class MajDataBaseImpl implements MajDataBase {
 
     @Override
@@ -64,5 +71,45 @@ public class MajDataBaseImpl implements MajDataBase {
         JSONArray array = JSONUtil.readJSONArray(new File("maj-db/maj.db"), StandardCharsets.UTF_8);
         List<MajContext> majContexts = JSONUtil.toList(array, MajContext.class);
         return majContexts;
+    }
+
+
+    /**
+     * 分析历史对局
+     *
+     * @param
+     * @return
+     * @throws
+     * @author zhaoxu
+     */
+    @Override
+    public List<String> analyzeHistoryMaj() {
+        List<MajContext> oldList = queryAllFromFile();
+        //提取对局信息集合(每一圈)
+        List<MajPlayerResult> majPlayerResultList = oldList.stream().flatMap(majContext -> majContext.getMatchResultList().stream()).collect(Collectors.toList());
+
+        //使用map统计历史总输赢
+        Map<String, BigDecimal> historyMoneyMap = Maps.newTreeMap();
+        for (MajPlayerResult majPlayerResult : majPlayerResultList) {
+            String nickName = majPlayerResult.getNickName();
+            BigDecimal money = majPlayerResult.getChangeMoney();
+            if (historyMoneyMap.containsKey(nickName)) {
+                BigDecimal oldMoney = historyMoneyMap.get(nickName);
+                if (majPlayerResult.isWin()) {
+                    historyMoneyMap.put(nickName, oldMoney.add(money));
+                } else {
+                    historyMoneyMap.put(nickName, oldMoney.subtract(money));
+                }
+            } else {
+                if (majPlayerResult.isWin()) {
+                    historyMoneyMap.put(nickName, money);
+                } else {
+                    historyMoneyMap.put(nickName, money.negate());
+                }
+            }
+        }
+        List<Map.Entry<String, BigDecimal>> mapList = new ArrayList<>(historyMoneyMap.entrySet());
+        mapList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
+        return mapList.stream().map(entry -> entry.getKey() + " : " + entry.getValue() + "元").collect(Collectors.toList());
     }
 }

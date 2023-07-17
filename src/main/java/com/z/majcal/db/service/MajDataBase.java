@@ -1,7 +1,6 @@
 package com.z.majcal.db.service;
 
 
-
 import com.z.majcal.core.MajContext;
 
 import java.util.List;
@@ -13,5 +12,8 @@ public interface MajDataBase {
 
 
     List<MajContext> queryAllFromFile();
+
+
+    List<String> analyzeHistoryMaj();
 
 }
