@@ -13,12 +13,12 @@
         body {
             font-family: Arial, sans-serif;
             font-size: 16px;
-            background-color: #f5f5f5;
+            background-color: #ceebf0;
             overflow-x: hidden;
         }
 
         header {
-            background-color: #ffa500;
+            background-color: #c8f0a8;
             color: white;
             text-align: center;
             padding: 20px;
@@ -124,7 +124,6 @@
         <div th:each="result : ${resultList}">
             <pre th:text="${result.toString()}"></pre>
         </div>
-
 
         <p>最近的场次:</p>
         <div th:each="majContext : ${majContexts}">
