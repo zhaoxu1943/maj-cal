@@ -8,6 +8,8 @@ import com.z.majcal.entity.dto.MajPlayerResult;
 import com.z.majcal.exception.MajException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -21,7 +23,7 @@ import static com.z.majcal.config.MajConfig.*;
 public class MajCalculate {
 
 
-    private MajContext context;
+    private MajContext context = new MajContext();
 
     private final List<String> allNickNameList = MajPlayer.haoge.getAllNickName();
 
@@ -32,6 +34,10 @@ public class MajCalculate {
      * @author zhaoxu
      */
     public MajContext calculate(String originStr) {
+        //生成本局唯一hash,作为ID
+        String md5Hash = calculateMD5Hash(originStr);
+        context.setId(md5Hash);
+
         //字符串预处理
         String processStr = preProcess(originStr);
 
@@ -57,6 +63,28 @@ public class MajCalculate {
         return context;
     }
 
+
+    /**
+     * 生成md5-hash值
+     *
+     * @author zhaoxu
+     */
+    public static String calculateMD5Hash(String string) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] bytes = md.digest(string.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : bytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+
     /**
      * 字符串预处理: 解决昵称扫描,与分数无空格,导致扫描不到该玩家的问题
      *
@@ -77,9 +105,8 @@ public class MajCalculate {
         str = str.replace("stephen1943", "zhaoxu");
 
         //预处理: zhanglei名字问题
-        str = str.replace("毒瘤小张","zhanglei");
-        str = str.replace("瘤小张","zhanglei");
-
+        str = str.replace("毒瘤小张", "zhanglei");
+        str = str.replace("瘤小张", "zhanglei");
 
 
         //预处理2: 处理n 和位之间的空格
@@ -159,8 +186,6 @@ public class MajCalculate {
      * @author zhaoxu
      */
     private void initMajContext(Set<String> playerSet, int times) {
-        context = new MajContext();
-        context.setId(UUID.randomUUID().toString());
         context.setPlayerNickNameSet(playerSet);
         context.setType(playerSet.size());
         context.setTime(times);

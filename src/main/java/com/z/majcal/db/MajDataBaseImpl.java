@@ -1,14 +1,18 @@
 package com.z.majcal.db;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.z.majcal.core.MajContext;
 import com.z.majcal.db.service.MajDataBase;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -18,7 +22,19 @@ public class MajDataBaseImpl implements MajDataBase {
     public void saveAfterQuery(MajContext majContext) {
 
         List<MajContext> oldList = queryAllFromFile();
-        oldList.add(majContext);
+        //保存最新的查询结果
+        //根据对局hash-id去重
+        //获取所有id
+        List<String> idList = oldList.stream().map(MajContext::getId).collect(Collectors.toList());
+        if (CollectionUtil.isNotEmpty(idList)) {
+            if (!idList.contains(majContext.getId())) {
+                //如果不包含，添加
+                oldList.add(majContext);
+            } else {
+                log.info("已经存在相同的对局,不再保存,hash:{}", majContext.getId());
+            }
+        }
+
         JSONArray array = JSONUtil.parseArray(oldList);
         String majContextJsonStr = JSONUtil.toJsonStr(array);
 
@@ -46,7 +62,7 @@ public class MajDataBaseImpl implements MajDataBase {
     @Override
     public List<MajContext> queryAllFromFile() {
         JSONArray array = JSONUtil.readJSONArray(new File("maj-db/maj.db"), StandardCharsets.UTF_8);
-        List<MajContext> majContexts = JSONUtil.toList(array,MajContext.class);
+        List<MajContext> majContexts = JSONUtil.toList(array, MajContext.class);
         return majContexts;
     }
 }
