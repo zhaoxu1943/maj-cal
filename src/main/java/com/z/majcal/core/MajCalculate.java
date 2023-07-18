@@ -34,6 +34,8 @@ public class MajCalculate {
      * @author zhaoxu
      */
     public MajContext calculate(String originStr) {
+        //排除原始字符串头尾空格,防止空格导致的hash值问题
+        originStr = originStr.trim();
         //生成本局唯一hash,作为ID
         String md5Hash = calculateMD5Hash(originStr);
         context.setId(md5Hash);
