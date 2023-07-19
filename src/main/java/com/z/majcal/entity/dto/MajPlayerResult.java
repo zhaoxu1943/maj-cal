@@ -31,11 +31,12 @@ public class MajPlayerResult implements Comparable<MajPlayerResult> {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("第").append(rank).append("名:").append(nickName)
-                .append(",总分:").append(scoreSum)
+                .append(",总点数:").append(scoreSum)
                 .append(",总金额:").append(money).append("元")
-                .append(isWin?",赢钱":",输钱")
+                .append(isWin?",狂赚":",输钱")
                 .append(changeMoney)
-                .append("元");
+                .append("元")
+                .append(isWin?"!!!":"");
         return sb.toString();
     }
 }
