@@ -2,3 +2,9 @@ server:
   port: 9999
   servlet:
     context-path: /maj
+spring:
+  thymeleaf:
+    cache: false
+    enabled: true
+    prefix: classpath:/templates/
+    suffix: .html
