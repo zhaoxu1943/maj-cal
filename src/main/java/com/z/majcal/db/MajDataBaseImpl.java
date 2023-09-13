@@ -116,7 +116,7 @@ public class MajDataBaseImpl implements MajDataBase {
             result.append(entry.getKey());
             result.append(" : ");
             result.append(entry.getValue());
-            result.append("元  ,最近五局: ");
+            result.append("元\n最近五局 : ");
             List<String> tendency = majContextList.stream().map(maj -> maj.getChangeByNickName(entry.getKey())).collect(Collectors.toList());
             if (CollectionUtil.isNotEmpty(tendency)) {
                 for (String s : tendency) {

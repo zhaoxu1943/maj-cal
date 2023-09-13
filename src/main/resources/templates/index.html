@@ -33,6 +33,7 @@
             margin: 0 auto;
             padding: 20px;
             background-color: white;
+            background-image: url('bg.png');
             border-radius: 5px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
@@ -82,7 +83,7 @@
         }
 
         p {
-            font-size: 24px;
+            font-size: 30px;
             font-weight: bold;
             margin-bottom: 10px;
         }
@@ -90,12 +91,13 @@
         pre {
             font-size: 24px;
             font-weight: bold; /* changed from normal to bold */
-            font-family: "Open Sans", sans-serif; /* added new font family */
+            font-family: Microsoft YaHei, Arial, sans-serif;
             white-space: pre-wrap;
             word-wrap: break-word;
             margin: 0;
             padding: 10px;
             background-color: #f8f8f8;
+            background-image: url('bg.png');
             border: 1px solid #ccc;
             border-radius: 5px;
             box-sizing: border-box;
@@ -106,10 +108,9 @@
 <header>Maj Calculator</header>
 <div class="container">
     <form method="post" th:action="@{/submit}">
-        <label for="inputField">请输入OCR后的对局信息:</label>
+        <label for="inputField" th:style="'color: white;font-size: 30px'">请输入OCR后的对局信息:</label>
         <input type="text" id="inputField" name="inputValue">
         <button type="submit">执行计算</button>
-
     </form>
 
     <form method="get" th:action="@{/latest}">
@@ -118,18 +119,18 @@
 
 
     <div th:if="${majContext != null}" class="result">
-        <p>计算结果:</p>
-        <pre th:text="${majContext.toString()}"></pre>
+        <p th:style="'color: white'">计算结果:</p>
+        <pre th:style="'color: white'" th:text="${majContext.toString()}"></pre>
     </div>
     <div th:if="${majContexts != null}">
-        <p>历史排行榜:</p>
+        <p th:style="'color: white'">历史排行榜:</p>
         <div th:each="result : ${resultList}">
-            <pre th:text="${result.toString()}"></pre>
+            <pre th:style="'color: white'" th:text="${result.toString()}"></pre>
         </div>
 
-        <p>最近的场次:</p>
+        <p th:style="'color: white'">最近的场次:</p>
         <div th:each="majContext : ${majContexts}">
-            <pre th:text="${majContext.toString()}"></pre>
+            <pre th:style="'color: white'" th:text="${majContext.toString()}"></pre>
         </div>
     </div>
 </div>
