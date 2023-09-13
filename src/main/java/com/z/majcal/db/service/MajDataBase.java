@@ -14,6 +14,6 @@ public interface MajDataBase {
     List<MajContext> queryAllFromFile();
 
 
-    List<String> analyzeHistoryMaj();
+    List<String> analyzeHistoryMaj(List<MajContext> majContexts);
 
 }

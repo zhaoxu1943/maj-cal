@@ -57,7 +57,7 @@ public class MajCalApplication {
     @GetMapping("/latest")
     public String getLatestMajContext(Model model) {
         List<MajContext> majContexts = majDataBase.queryAllFromFile();
-        List<String> resultList = majDataBase.analyzeHistoryMaj();
+        List<String> resultList = majDataBase.analyzeHistoryMaj(majContexts);
         majContexts.sort(Comparator.comparing(MajContext::getCreateTime).reversed());
         model.addAttribute("majContexts", majContexts);
         model.addAttribute("resultList", resultList);

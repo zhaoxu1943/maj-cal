@@ -83,7 +83,7 @@ public class MajDataBaseImpl implements MajDataBase {
      * @author zhaoxu
      */
     @Override
-    public List<String> analyzeHistoryMaj() {
+    public List<String> analyzeHistoryMaj(List<MajContext> majContexts) {
         List<MajContext> oldList = queryAllFromFile();
         //提取对局信息集合(每一圈)
         List<MajPlayerResult> majPlayerResultList = oldList.stream().flatMap(majContext -> majContext.getMatchResultList().stream()).collect(Collectors.toList());
@@ -110,6 +110,21 @@ public class MajDataBaseImpl implements MajDataBase {
         }
         List<Map.Entry<String, BigDecimal>> mapList = new ArrayList<>(historyMoneyMap.entrySet());
         mapList.sort((o1, o2) -> o2.getValue().compareTo(o1.getValue()));
-        return mapList.stream().map(entry -> entry.getKey() + " : " + entry.getValue() + "元").collect(Collectors.toList());
+        List<MajContext> majContextList = majContexts.subList(majContexts.size() - 5, majContexts.size());
+        return mapList.stream().map(entry -> {
+            StringBuilder result = new StringBuilder();
+            result.append(entry.getKey());
+            result.append(" : ");
+            result.append(entry.getValue());
+            result.append("元  ,最近五局: ");
+            List<String> tendency = majContextList.stream().map(maj -> maj.getChangeByNickName(entry.getKey())).collect(Collectors.toList());
+            if (CollectionUtil.isNotEmpty(tendency)) {
+                for (String s : tendency) {
+                    result.append(s);
+                    result.append(" ");
+                }
+            }
+            return result.toString();
+        }).collect(Collectors.toList());
     }
 }

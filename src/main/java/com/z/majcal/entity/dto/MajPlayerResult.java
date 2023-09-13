@@ -24,7 +24,7 @@ public class MajPlayerResult implements Comparable<MajPlayerResult> {
 
     @Override
     public int compareTo(MajPlayerResult o) {
-        return o.scoreSum-this.scoreSum;
+        return o.scoreSum - this.scoreSum;
     }
 
     @Override
@@ -33,10 +33,10 @@ public class MajPlayerResult implements Comparable<MajPlayerResult> {
         sb.append("第").append(rank).append("名:").append(nickName)
                 .append(",总点数:").append(scoreSum)
                 .append(",总金额:").append(money).append("元")
-                .append(isWin?",狂赚":",输钱")
+                .append(isWin ? ",狂赚" : ",输钱")
                 .append(changeMoney)
                 .append("元")
-                .append(isWin?"!!!":"");
+                .append(isWin ? "!!!" : "");
         return sb.toString();
     }
 }
